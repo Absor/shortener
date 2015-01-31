@@ -1,5 +1,6 @@
 var request = require('superagent');
 var should = require('should');
+var url = require('url');
 
 require('../app/index.js');
 var baseUrl = "http://localhost:3000";
@@ -77,11 +78,26 @@ describe('GET /:id', function() {
                 });
         });
 
-        xit('Should redirect (301)  the user agent to a previously stored URL', function(done) {
+        it('Should redirect (301) the user agent to a previously stored URL', function(done) {
             request
                 .get(baseUrl + '/' + id)
+                .redirects(0) // do not follow redirects so we get the info
                 .end(function(err, res) {
                     res.status.should.be.exactly(301);
+                    var formatShortened = url.format(url.parse(urlToShorten));
+                    var formatRedirect = url.format(url.parse(res.header['location']));
+                    formatShortened.should.match(formatRedirect);
+                    done();
+                });
+        });
+
+        it('Should give the same id when requesting with the same URL', function(done) {
+            request
+                .post(baseUrl + '/shorten')
+                .type('form')
+                .send({link: urlToShorten})
+                .end(function(err, res) {
+                    res.text.should.be.exactly(id);
                     done();
                 });
         });
