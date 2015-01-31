@@ -25,5 +25,9 @@
   "dependencies": {
     "body-parser": "^1.10.2",
     "express": "^4.11.1"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "2.1.x"
   }
 }
